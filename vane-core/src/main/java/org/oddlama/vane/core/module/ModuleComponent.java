@@ -2,9 +2,10 @@ package org.oddlama.vane.core.module;
 
 import java.io.IOException;
 import java.util.function.Consumer;
+import org.bukkit.NamespacedKey;
 import org.bukkit.scheduler.BukkitTask;
 import org.json.JSONObject;
-import org.oddlama.vane.core.ResourcePackGenerator;
+import org.oddlama.vane.core.resourcepack.ResourcePackGenerator;
 
 public abstract class ModuleComponent<T extends Module<T>> {
 
@@ -68,5 +69,9 @@ public abstract class ModuleComponent<T extends Module<T>> {
 
 	public final void mark_persistent_storage_dirty() {
 		context.mark_persistent_storage_dirty();
+	}
+
+	public final NamespacedKey namespaced_key(String value) {
+		return new NamespacedKey(get_module(), get_context().variable_yaml_path(value));
 	}
 }

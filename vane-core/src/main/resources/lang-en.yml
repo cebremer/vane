@@ -12,7 +12,7 @@
 
 # DO NOT CHANGE! The version of this language file. Used to determine
 # if the file needs to be updated.
-version: 2
+version: 4
 # The corresponding language code used in resource packs. Used for
 # resource pack generation. Typically this is a combination of the
 # language code (ISO 639) and the country code (ISO 3166).
@@ -37,6 +37,23 @@ command_customitem:
   description: "Gives a specific custom item to the player."
   help: "§agive §7<§bitem§7>:§r Gives a specific custom item to the player."
 
+command_enchant:
+  # This message is sent when an enchantment level is given that is too low for the chosen enchantment.
+  # %1$s: Given level
+  # %2$s: Minimum level
+  level_too_low: "§cerror:§6 level %1$s§6 is too low, must be at least %2$s"
+  # This message is sent when an enchantment level is given that is too high for the chosen enchantment.
+  # %1$s: Given level
+  # %2$s: Maximum level
+  level_too_high: "§cerror:§6 level %1$s§6 is too high, must be at most %2$s"
+  # This message is sent when the selected enchantment cannot be applied to the item in hand.
+  # %1$s: Enchantment
+  # %2$s: Item in hand
+  invalid_enchantment: "§cerror: %1$s§6 cannot be applied to %2$s"
+  usage: "%1$s §benchantment §7[§blevel§7]"
+  description: "Enchants the item in your hand."
+  help: "Enchants the item in your hand."
+
 command_vane:
   # This message is sent when a module has been successfully reloaded.
   # %1$s: module
@@ -45,7 +62,8 @@ command_vane:
   # %1$s: module
   reload_fail: "%1$s§7: §creload failed"
   # This message is sent when the resource_pack has been successfully generated.
-  resource_pack_generate_success: "§aResource pack generated successfully"
+  # %1$s: path to the resource pack file
+  resource_pack_generate_success: "§aResource pack generated successfully: %1$s"
   # This message is sent when the resource_pack could not be generated.
   resource_pack_generate_fail: "§cAn error has occurred while generating the resource pack"
   usage: "%1$s §7<§areload§7|§agenerate_resource_pack§7>"
@@ -56,7 +74,8 @@ command_vane:
 resource_pack:
   # This kick message is used when a mandatory resource pack was declined by a player.
   declined: "You need to accept the resource pack to play on this server.\n\
-    It is needed for localization and textures."
+    It is needed for localization and textures. In case you declined accidentally,\n\
+    you can change this by editing this server's entry in your server list."
   # This kick message is used when a mandatory resource pack failed to download for  player.
   download_failed: "§cYour resource pack download seems to have failed.§r\n\
     §7(You have been disconnected to prevent display errors)\n\

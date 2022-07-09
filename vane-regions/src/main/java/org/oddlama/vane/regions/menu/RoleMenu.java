@@ -1,7 +1,5 @@
 package org.oddlama.vane.regions.menu;
 
-import static org.oddlama.vane.util.Util.namespaced_key;
-
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -24,6 +22,7 @@ import org.oddlama.vane.regions.region.RegionGroup;
 import org.oddlama.vane.regions.region.Role;
 import org.oddlama.vane.regions.region.RoleSetting;
 import org.oddlama.vane.util.ItemUtil;
+import org.oddlama.vane.util.Util;
 
 public class RoleMenu extends ModuleComponent<Regions> {
 
@@ -66,7 +65,7 @@ public class RoleMenu extends ModuleComponent<Regions> {
 			new TranslatedItemStack<>(
 				ctx,
 				"delete",
-				namespaced_key("vane", "decoration_tnt_1"),
+				Util.namespaced_key("vane", "decoration_tnt_1"),
 				1,
 				"Used to delete this role."
 			);
@@ -74,7 +73,7 @@ public class RoleMenu extends ModuleComponent<Regions> {
 			new TranslatedItemStack<>(
 				ctx,
 				"delete_confirm_accept",
-				namespaced_key("vane", "decoration_tnt_1"),
+				Util.namespaced_key("vane", "decoration_tnt_1"),
 				1,
 				"Used to confirm deleting the role."
 			);
@@ -288,7 +287,7 @@ public class RoleMenu extends ModuleComponent<Regions> {
 						lang_select_assign_player_title.str(),
 						lang_filter_players_title.str(),
 						all_players,
-						p -> item_select_player.alternative(ItemUtil.skull_for_player(p), "§a§l" + p.getName()),
+						p -> item_select_player.alternative(ItemUtil.skull_for_player(p, true), "§a§l" + p.getName()),
 						filter,
 						(player2, m, p) -> {
 							all_players.remove(p);
@@ -335,7 +334,7 @@ public class RoleMenu extends ModuleComponent<Regions> {
 						lang_select_remove_player_title.str(),
 						lang_filter_players_title.str(),
 						all_players,
-						p -> item_select_player.alternative(ItemUtil.skull_for_player(p), "§a§l" + p.getName()),
+						p -> item_select_player.alternative(ItemUtil.skull_for_player(p, true), "§a§l" + p.getName()),
 						filter,
 						(player2, m, p) -> {
 							all_players.remove(p);

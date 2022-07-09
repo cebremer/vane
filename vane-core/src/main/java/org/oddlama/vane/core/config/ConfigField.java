@@ -4,7 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.Supplier;
+
 import org.apache.commons.lang.WordUtils;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.oddlama.vane.core.YamlLoadException;
 import org.oddlama.vane.core.functional.Consumer2;
@@ -20,7 +24,7 @@ public abstract class ConfigField<T> implements Comparable<ConfigField<?>> {
 	private String[] yaml_path_components;
 	private String yaml_group_path;
 	private String basename;
-	private String description;
+	private Supplier<String> description;
 
 	public ConfigField(
 		Object owner,
@@ -52,21 +56,23 @@ public abstract class ConfigField<T> implements Comparable<ConfigField<?>> {
 		field.setAccessible(true);
 
 		// Dynamic description
-		try {
-			this.description = (String) owner.getClass().getMethod(field.getName() + "_desc").invoke(owner);
-		} catch (NoSuchMethodException e) {
-			// Ignore, field wasn't overridden
-			this.description = description;
-		} catch (InvocationTargetException | IllegalAccessException e) {
-			throw new RuntimeException(
-				"Could not call " +
-				owner.getClass().getName() +
-				"." +
-				field.getName() +
-				"_desc() to override description value",
-				e
-			);
-		}
+		this.description = () -> {
+			try {
+				return (String) owner.getClass().getMethod(field.getName() + "_desc").invoke(owner);
+			} catch (NoSuchMethodException e) {
+				// Ignore, field wasn't overridden
+				return description;
+			} catch (InvocationTargetException | IllegalAccessException e) {
+				throw new RuntimeException(
+					"Could not call " +
+					owner.getClass().getName() +
+					"." +
+					field.getName() +
+					"_desc() to override description value",
+					e
+				);
+			}
+		};
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,6 +89,24 @@ public abstract class ConfigField<T> implements Comparable<ConfigField<?>> {
 				"." +
 				field.getName() +
 				"_def() to override default value",
+				e
+			);
+		}
+	}
+
+	protected Boolean overridden_metrics() {
+		try {
+			return (Boolean)owner.getClass().getMethod(field.getName() + "_metrics").invoke(owner);
+		} catch (NoSuchMethodException e) {
+			// Ignore, field wasn't overridden
+			return null;
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException(
+				"Could not call " +
+				owner.getClass().getName() +
+				"." +
+				field.getName() +
+				"_metrics() to override metrics status",
 				e
 			);
 		}
@@ -136,7 +160,7 @@ public abstract class ConfigField<T> implements Comparable<ConfigField<?>> {
 		final var description_wrapped =
 			indent +
 			"# " +
-			WordUtils.wrap(description, Math.max(60, 80 - indent.length()), "\n" + indent + "# ", false);
+			WordUtils.wrap(description.get(), Math.max(60, 80 - indent.length()), "\n" + indent + "# ", false);
 		builder.append(description_wrapped);
 		builder.append("\n");
 	}
@@ -216,6 +240,11 @@ public abstract class ConfigField<T> implements Comparable<ConfigField<?>> {
 
 	public abstract T def();
 
+	// Disabled by default, fields must explicitly support this!
+	public boolean metrics() {
+		return false;
+	}
+
 	public abstract void generate_yaml(
 		StringBuilder builder,
 		String indent,
@@ -233,6 +262,11 @@ public abstract class ConfigField<T> implements Comparable<ConfigField<?>> {
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException("Invalid field access on '" + field.getName() + "'. This is a bug.");
 		}
+	}
+
+	public void register_metrics(Metrics metrics) {
+		if (!metrics()) return;
+		metrics.addCustomChart(new SimplePie(yaml_path(), () -> get().toString()));
 	}
 
 	public String[] components() {

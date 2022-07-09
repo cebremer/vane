@@ -21,7 +21,7 @@ import org.oddlama.vane.core.lang.TranslatedMessage;
 import org.oddlama.vane.core.module.Module;
 import org.oddlama.vane.util.Nms;
 
-@VaneModule(name = "bedtime", bstats = 8639, config_version = 3, lang_version = 3, storage_version = 1)
+@VaneModule(name = "bedtime", bstats = 8639, config_version = 3, lang_version = 5, storage_version = 1)
 public class Bedtime extends Module<Bedtime> {
 
 	// One set of sleeping players per world, to keep track
@@ -54,9 +54,6 @@ public class Bedtime extends Module<Bedtime> {
 	@LangMessage
 	private TranslatedMessage lang_player_bed_leave;
 
-	@LangMessage
-	private TranslatedMessage lang_sleep_success;
-
 	public BedtimeDynmapLayer dynmap_layer;
 	public BedtimeBlueMapLayer blue_map_layer;
 
@@ -88,9 +85,6 @@ public class Bedtime extends Module<Bedtime> {
 		change_time_smoothly(world, this, config_target_time, config_interpolation_ticks);
 		world.setStorm(false);
 		world.setThundering(false);
-
-		// Send message
-		lang_sleep_success.broadcast_world(world);
 
 		// Clear sleepers
 		reset_sleepers(world);
@@ -153,15 +147,17 @@ public class Bedtime extends Module<Bedtime> {
 		return sleepers.size();
 	}
 
+	private long get_potential_sleepers_in_world(final World world) {
+		return world.getPlayers().stream().filter(p -> p.getGameMode() != GameMode.SPECTATOR).count();
+	}
+
 	private double get_percentage_sleeping(final World world) {
 		final var count_sleeping = get_amount_sleeping(world);
 		if (count_sleeping == 0) {
 			return 0.0;
 		}
 
-		final var total = world.getPlayers().stream().filter(p -> p.getGameMode() != GameMode.SPECTATOR).count();
-
-		return (double) count_sleeping / total;
+		return (double)count_sleeping / get_potential_sleepers_in_world(world);
 	}
 
 	private boolean enough_players_sleeping(final World world) {
@@ -181,7 +177,14 @@ public class Bedtime extends Module<Bedtime> {
 
 		// Broadcast sleeping message
 		var percent = get_percentage_sleeping(world);
-		lang_player_bed_enter.broadcast_world(world, "§6" + player.getName(), "§6" + percentage_str(percent));
+		var count_sleeping = get_amount_sleeping(world);
+		var count_required = (int)Math.ceil(get_potential_sleepers_in_world(world) * config_sleep_threshold);
+		lang_player_bed_enter.broadcast_world_action_bar(world,
+				"§6" + player.getName(),
+				"§6" + percentage_str(percent),
+				String.valueOf(count_sleeping),
+				String.valueOf(count_required),
+				"§6" + world.getName());
 	}
 
 	private void remove_sleeping(Player player) {
@@ -198,7 +201,14 @@ public class Bedtime extends Module<Bedtime> {
 		if (sleepers.remove(player.getUniqueId())) {
 			// Broadcast sleeping message
 			var percent = get_percentage_sleeping(world);
-			lang_player_bed_leave.broadcast_world(world, "§6" + player.getName(), "§6" + percentage_str(percent));
+			var count_sleeping = get_amount_sleeping(world);
+			var count_required = (int)Math.ceil(get_potential_sleepers_in_world(world) * config_sleep_threshold);
+			lang_player_bed_leave.broadcast_world_action_bar(world,
+					"§6" + player.getName(),
+					"§6" + percentage_str(percent),
+					String.valueOf(count_sleeping),
+					String.valueOf(count_required),
+					"§6" + world.getName());
 		}
 	}
 

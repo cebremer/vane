@@ -40,11 +40,13 @@ import org.oddlama.vane.annotation.lang.LangVersion;
 import org.oddlama.vane.annotation.persistent.Persistent;
 import org.oddlama.vane.core.Core;
 import org.oddlama.vane.core.LootTable;
-import org.oddlama.vane.core.ResourcePackGenerator;
+import org.oddlama.vane.core.resourcepack.ResourcePackGenerator;
+
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+
 import org.oddlama.vane.core.command.Command;
 import org.oddlama.vane.core.config.ConfigManager;
 import org.oddlama.vane.core.functional.Consumer1;
-import org.oddlama.vane.core.item.ModelDataEnum;
 import org.oddlama.vane.core.lang.LangManager;
 import org.oddlama.vane.core.persistent.PersistentStorageManager;
 
@@ -53,6 +55,7 @@ public abstract class Module<T extends Module<T>> extends JavaPlugin implements 
 	public final VaneModule annotation = getClass().getAnnotation(VaneModule.class);
 	public Core core;
 	public Logger log = getLogger();
+	public ComponentLogger clog = getComponentLogger();
 	private final String namespace = "vane_" + annotation.name().replaceAll("[^a-zA-Z0-9_]", "_");
 
 	// Managers
@@ -81,13 +84,14 @@ public abstract class Module<T extends Module<T>> extends JavaPlugin implements 
 	// Base configuration
 	@ConfigString(
 		def = "inherit",
-		desc = "The language for this module. The corresponding language file must be named lang-{lang}.yml. Specifying 'inherit' will load the value set for vane-core."
+		desc = "The language for this module. The corresponding language file must be named lang-{lang}.yml. Specifying 'inherit' will load the value set for vane-core.",
+		metrics = true
 	)
 	public String config_lang;
 
 	@ConfigBoolean(
 		def = true,
-		desc = "Enable plugin metrics via bStats. You can opt-out here or via the global bStats configuration."
+		desc = "Enable plugin metrics via bStats. You can opt-out here or via the global bStats configuration. All collected information is completely anonymous and publicly available."
 	)
 	public boolean config_metrics_enabled;
 
@@ -161,7 +165,7 @@ public abstract class Module<T extends Module<T>> extends JavaPlugin implements 
 	public ProtocolManager protocol_manager;
 
 	// bStats
-	private Metrics metrics;
+	public Metrics metrics;
 
 	public Module() {
 		// Get core plugin reference, important for inherited configuration
@@ -247,6 +251,7 @@ public abstract class Module<T extends Module<T>> extends JavaPlugin implements 
 			var id = annotation.bstats();
 			if (id != -1) {
 				metrics = new Metrics(this, id);
+				config_manager.register_metrics(metrics);
 			}
 		}
 		on_enable();
@@ -278,10 +283,12 @@ public abstract class Module<T extends Module<T>> extends JavaPlugin implements 
 			.forEach(lang_file -> {
 				final var yaml = YamlConfiguration.loadConfiguration(lang_file);
 				try {
-					lang_manager.generate_resource_pack(pack, yaml);
+					lang_manager.generate_resource_pack(pack, yaml, lang_file);
 				} catch (Exception e) {
-					log.severe("Error while generating language for '" + lang_file + "' of module " + get_name());
-					throw e;
+					throw new RuntimeException(
+						"Error while generating language for '" + lang_file + "' of module " + get_name(),
+						e
+					);
 				}
 			});
 
@@ -458,27 +465,6 @@ public abstract class Module<T extends Module<T>> extends JavaPlugin implements 
 
 	public void unregister_permission(Permission permission) {
 		getServer().getPluginManager().removePermission(permission);
-	}
-
-	/**
-	 * Returns a enumeration managing model data. Enum members must be named
-	 * like the corresponding item names, but uppercase.
-	 */
-	public Class<? extends ModelDataEnum> model_data_enum() {
-		throw new RuntimeException(
-			"A module must override 'model_data_enum()', if it want's to register custom items!"
-		);
-	}
-
-	/**
-	 * Returns a globally unique identifier for a given per-plugin unqiue model id.
-	 * [As of 1.16.2]: Unfortunately this is basically a magic value, and must be
-	 * unique per base material across all plugins. That sucks.
-	 */
-	public int model_data(int item_id, int variant_id) {
-		throw new RuntimeException(
-			"A module must override 'model_data(int, int)', if it want's to register custom items!"
-		);
 	}
 
 	public LootTable loot_table(final LootTables table) {

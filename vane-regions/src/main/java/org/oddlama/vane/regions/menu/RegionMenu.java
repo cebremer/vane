@@ -1,7 +1,6 @@
 package org.oddlama.vane.regions.menu;
 
 import static org.oddlama.vane.util.PlayerUtil.give_items;
-import static org.oddlama.vane.util.Util.namespaced_key;
 
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -23,6 +22,7 @@ import org.oddlama.vane.regions.Regions;
 import org.oddlama.vane.regions.region.Region;
 import org.oddlama.vane.regions.region.RegionGroup;
 import org.oddlama.vane.regions.region.RegionSelection;
+import org.oddlama.vane.util.Util;
 
 public class RegionMenu extends ModuleComponent<Regions> {
 
@@ -53,7 +53,7 @@ public class RegionMenu extends ModuleComponent<Regions> {
 			new TranslatedItemStack<>(
 				ctx,
 				"delete",
-				namespaced_key("vane", "decoration_tnt_1"),
+				Util.namespaced_key("vane", "decoration_tnt_1"),
 				1,
 				"Used to delete this region."
 			);
@@ -61,7 +61,7 @@ public class RegionMenu extends ModuleComponent<Regions> {
 			new TranslatedItemStack<>(
 				ctx,
 				"delete_confirm_accept",
-				namespaced_key("vane", "decoration_tnt_1"),
+				Util.namespaced_key("vane", "decoration_tnt_1"),
 				1,
 				"Used to confirm deleting the region."
 			);
@@ -124,7 +124,6 @@ public class RegionMenu extends ModuleComponent<Regions> {
 						region.name(),
 						(player2, name) -> {
 							region.name(name);
-							mark_persistent_storage_dirty();
 
 							// Update map marker
 							get_module().update_marker(region);

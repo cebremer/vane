@@ -12,20 +12,19 @@
 
 # DO NOT CHANGE! The version of this language file. Used to determine
 # if the file needs to be updated.
-version: 4
+version: 5
 # The corresponding language code used in resource packs. Used for
 # resource pack generation. Typically this is a combination of the
 # language code (ISO 639) and the country code (ISO 3166).
 resource_pack_lang_code: 'fr_fr'
 
-player_bed_enter: "%1$s§e est endormi·e (%2$s§e)"
-player_bed_leave: "%1$s§e se sent reposé·e (%2$s§e)"
-sleep_success: "§eEt boum, le soleil se lève !"
+player_bed_enter: "%1$s est endormi·e %3$s/%4$s"
+player_bed_leave: "%1$s se sent reposé·e %3$s/%4$s"
 
 dynmap:
   layer_label: "Lits"
   marker_label: "%1$s"
 
 blue_map:
-  layer_label: "Portails"
+  layer_label: "Lits"
   marker_label: "<span style=\"color: white\">🏠 %1$s</span>"

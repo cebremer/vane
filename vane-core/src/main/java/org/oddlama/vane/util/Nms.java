@@ -22,11 +22,12 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_18_R1.util.CraftNamespacedKey;
+import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R1.util.CraftNamespacedKey;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,10 @@ public class Nms {
 
 	public static ServerPlayer get_player(Player player) {
 		return ((CraftPlayer) player).getHandle();
+	}
+
+	public static Entity entity_handle(final org.bukkit.entity.Entity entity) {
+		return ((CraftEntity)entity).getHandle();
 	}
 
 	public static void register_enchantment(NamespacedKey key, Enchantment enchantment) {

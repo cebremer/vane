@@ -1,9 +1,8 @@
 package org.oddlama.vane.portals.menu;
 
-import static org.oddlama.vane.util.Util.namespaced_key;
-
 import java.util.Objects;
 import java.util.stream.Collectors;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -26,6 +25,7 @@ import org.oddlama.vane.portals.event.PortalDestroyEvent;
 import org.oddlama.vane.portals.event.PortalSelectTargetEvent;
 import org.oddlama.vane.portals.event.PortalUnlinkConsoleEvent;
 import org.oddlama.vane.portals.portal.Portal;
+import org.oddlama.vane.util.Util;
 
 public class ConsoleMenu extends ModuleComponent<Portals> {
 
@@ -43,6 +43,18 @@ public class ConsoleMenu extends ModuleComponent<Portals> {
 
 	@LangMessage
 	public TranslatedMessage lang_filter_portals_title;
+
+	@LangMessage
+	public TranslatedMessage lang_select_target_portal_visibility_public;
+
+	@LangMessage
+	public TranslatedMessage lang_select_target_portal_visibility_private;
+
+	@LangMessage
+	public TranslatedMessage lang_select_target_portal_visibility_group;
+
+	@LangMessage
+	public TranslatedMessage lang_select_target_portal_visibility_group_internal;
 
 	public TranslatedItemStack<?> item_settings;
 	public TranslatedItemStack<?> item_select_target;
@@ -88,7 +100,7 @@ public class ConsoleMenu extends ModuleComponent<Portals> {
 			new TranslatedItemStack<>(
 				ctx,
 				"unlink_console",
-				namespaced_key("vane", "decoration_tnt_1"),
+				Util.namespaced_key("vane", "decoration_tnt_1"),
 				1,
 				"Used to unlink the current console."
 			);
@@ -96,7 +108,7 @@ public class ConsoleMenu extends ModuleComponent<Portals> {
 			new TranslatedItemStack<>(
 				ctx,
 				"unlink_console_confirm_accept",
-				namespaced_key("vane", "decoration_tnt_1"),
+				Util.namespaced_key("vane", "decoration_tnt_1"),
 				1,
 				"Used to confirm unlinking the current console."
 			);
@@ -184,6 +196,17 @@ public class ConsoleMenu extends ModuleComponent<Portals> {
 		);
 	}
 
+	private Component portal_visibility(Portal.Visibility visibility) {
+		return (
+			switch (visibility) {
+				case PUBLIC -> lang_select_target_portal_visibility_public;
+				case GROUP -> lang_select_target_portal_visibility_group;
+				case GROUP_INTERNAL -> lang_select_target_portal_visibility_group_internal;
+				case PRIVATE -> lang_select_target_portal_visibility_private;
+			}
+		).format();
+	}
+
 	private MenuWidget menu_item_select_target(final Portal portal) {
 		return new MenuItem(
 			4,
@@ -194,7 +217,7 @@ public class ConsoleMenu extends ModuleComponent<Portals> {
 				} else {
 					menu.close(player);
 					final var all_portals = get_module()
-						.all_portals()
+						.all_available_portals()
 						.stream()
 						.filter(p -> {
 							switch (p.visibility()) {
@@ -232,7 +255,8 @@ public class ConsoleMenu extends ModuleComponent<Portals> {
 									get_module().icon_for(p),
 									"§a§l" + p.name(),
 									"§6" + String.format("%.1f", dist),
-									"§b" + p.spawn().getWorld().getName()
+									"§b" + p.spawn().getWorld().getName(),
+									portal_visibility(p.visibility())
 								);
 							},
 							filter,
@@ -253,7 +277,6 @@ public class ConsoleMenu extends ModuleComponent<Portals> {
 
 								// Update portal block to reflect new target on consoles
 								portal.update_blocks(get_module());
-								mark_persistent_storage_dirty();
 								return ClickResult.SUCCESS;
 							},
 							player2 -> {

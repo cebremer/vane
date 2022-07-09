@@ -12,7 +12,7 @@
 
 # DO NOT CHANGE! The version of this language file. Used to determine
 # if the file needs to be updated.
-version: 3
+version: 5
 # The corresponding language code used in resource packs. Used for
 # resource pack generation. Typically this is a combination of the
 # language code (ISO 639) and the country code (ISO 3166).
@@ -21,16 +21,19 @@ resource_pack_lang_code: 'en_us'
 # This message is broadcast in the world, when a player enters the bed.
 # %1$s: player name
 # %2$s: percentage of sleeping players
-player_bed_enter: "%1$s§e is now sleeping (%2$s§e)"
+# %3$s: current count of sleeping players in the relevant world
+# %4$s: required amount of sleeping players to advance time
+# %5$s: world name
+player_bed_enter: "%1$s is sleeping %3$s/%4$s"
 
 # This message is broadcast in the world, when a player leaves the bed early,
 # before time was advanced.
 # %1$s: player name
-# %2$s: percentage of sleeping players
-player_bed_leave: "%1$s§e feels rested (%2$s§e)"
-
-# Message sent when enough players were sleeping and time was advanced.
-sleep_success: "§eSun go brrrr"
+# %2$s: percentage of remaining sleeping players
+# %3$s: current count of sleeping players in the relevant world
+# %4$s: required amount of sleeping players to advance time
+# %5$s: world name
+player_bed_leave: "%1$s feels rested %3$s/%4$s"
 
 dynmap:
   # The label for the dynmap layer
@@ -41,7 +44,7 @@ dynmap:
 
 blue_map:
   # The label for the BlueMap marker set
-  layer_label: "Portals"
+  layer_label: "Beds"
   # The label for the BlueMap bed markers. Supports HTML. Arguments will be escaped properly.
   # %1$s: Player name
   marker_label: "<span style=\"color: white\">🏠 %1$s</span>"

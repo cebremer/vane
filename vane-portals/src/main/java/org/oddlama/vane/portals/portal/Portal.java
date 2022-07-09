@@ -27,7 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.oddlama.vane.external.json.JSONObject;
+import org.json.JSONObject;
 import org.oddlama.vane.portals.Portals;
 import org.oddlama.vane.portals.event.PortalActivateEvent;
 import org.oddlama.vane.portals.event.PortalDeactivateEvent;
@@ -111,6 +111,10 @@ public class Portal {
 	private UUID target_id = null;
 	private boolean target_locked = false;
 
+	// Whether the portal should be saved on next occasion.
+	// Not a saved field.
+	public boolean invalidated = true;
+
 	private Portal() {}
 
 	public Portal(final UUID owner, final Orientation orientation, final Location spawn) {
@@ -132,6 +136,10 @@ public class Portal {
 		return orientation;
 	}
 
+	public UUID spawn_world() {
+		return spawn.world_id();
+	}
+
 	public Location spawn() {
 		return spawn.location().clone();
 	}
@@ -146,6 +154,7 @@ public class Portal {
 
 	public void name(final String name) {
 		this.name = name;
+		this.invalidated = true;
 	}
 
 	public NamespacedKey style() {
@@ -158,6 +167,7 @@ public class Portal {
 		} else {
 			this.style = style.key();
 		}
+		this.invalidated = true;
 	}
 
 	public ItemStack icon() {
@@ -166,6 +176,7 @@ public class Portal {
 
 	public void icon(final ItemStack icon) {
 		this.icon = icon;
+		this.invalidated = true;
 	}
 
 	public Visibility visibility() {
@@ -174,6 +185,7 @@ public class Portal {
 
 	public void visibility(final Visibility visibility) {
 		this.visibility = visibility;
+		this.invalidated = true;
 	}
 
 	public boolean exit_orientation_locked() {
@@ -182,6 +194,7 @@ public class Portal {
 
 	public void exit_orientation_locked(boolean exit_orientation_locked) {
 		this.exit_orientation_locked = exit_orientation_locked;
+		this.invalidated = true;
 	}
 
 	public UUID target_id() {
@@ -190,6 +203,7 @@ public class Portal {
 
 	public void target_id(final UUID target_id) {
 		this.target_id = target_id;
+		this.invalidated = true;
 	}
 
 	public boolean target_locked() {
@@ -198,6 +212,7 @@ public class Portal {
 
 	public void target_locked(boolean target_locked) {
 		this.target_locked = target_locked;
+		this.invalidated = true;
 	}
 
 	public PortalBlock portal_block_for(final Block block) {

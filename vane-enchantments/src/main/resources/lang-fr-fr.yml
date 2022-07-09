@@ -12,35 +12,32 @@
 
 # DO NOT CHANGE! The version of this language file. Used to determine
 # if the file needs to be updated.
-version: 1
+version: 4
 # The corresponding language code used in resource packs. Used for
 # resource pack generation. Typically this is a combination of the
 # language code (ISO 639) and the country code (ISO 3166).
 resource_pack_lang_code: 'fr_fr'
 
 item_ancient_tome:
-  book:
-    name: "Grimoire antique"
-  enchanted_book:
-    name: "Grimoire antique"
+  name: "Grimoire antique"
+
+item_enchanted_ancient_tome:
+  name: "Grimoire antique"
 
 item_ancient_tome_of_knowledge:
-  book:
-    name: "Grimoire antique de Connaissance"
-  enchanted_book:
-    name: "Grimoire antique de Connaissance"
+  name: "Grimoire antique de Connaissance"
+
+item_enchanted_ancient_tome_of_knowledge:
+  name: "Grimoire antique de Connaissance"
 
 item_ancient_tome_of_the_gods:
-  book:
-    name: "Grimoire antique des Dieux"
-  enchanted_book:
-    name: "Grimoire antique des Dieux"
+  name: "Grimoire antique des Dieux"
+
+item_enchanted_ancient_tome_of_the_gods:
+  name: "Grimoire antique des Dieux"
 
 enchantment_angel:
   name: "Ange"
-
-enchantment_careless:
-  name: "Débroussaillage"
 
 enchantment_grappling_hook:
   name: "Grappin"
@@ -51,6 +48,10 @@ enchantment_hell_bent:
 enchantment_leafchopper:
   name: "Taille-feuille"
 
+# FIXME: translation missing
+enchantment_lightning:
+  name: "Lightning"
+
 enchantment_rake:
   name: "Rateau"
 
@@ -59,6 +60,9 @@ enchantment_seeding:
 
 enchantment_soulbound:
   name: "Lié à l'âme"
+  drop_lock_warning: "Soulbound Items can only be dropped using mouse"
+  drop_cooldown: "Drop again to confirm drop"
+  dropped_notification: "Soulbound Item Dropped: %1$s"
 
 enchantment_take_off:
   name: "Décollage"
@@ -68,11 +72,3 @@ enchantment_unbreakable:
 
 enchantment_wings:
   name: "Ailes"
-
-command_enchant:
-  level_too_low: "§cerreur:§6 le niveau %1$s§6 est trop bas, un minimum de %2$s§6 est requis"
-  level_too_high: "§cerreur:§6 le niveau d'enchantement %1$s§6 est trop élevé, un maximum de %2$s§6 est autorisé"
-  invalid_enchantment: "§cerreur: %1$s§6 ne peux pas être appliqué sur %2$s"
-  usage: "%1$s §benchantment §7[§bniveau§7]"
-  description: "Enchante l'objet que vous tenez dans votre main."
-  help: "Enchante l'objet que vous tenez dans votre main."

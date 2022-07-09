@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.function.Function;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.oddlama.vane.annotation.lang.LangMessage;
-import org.oddlama.vane.core.ResourcePackGenerator;
+import org.oddlama.vane.core.resourcepack.ResourcePackGenerator;
 import org.oddlama.vane.core.YamlLoadException;
 import org.oddlama.vane.core.module.Module;
 
@@ -28,7 +28,7 @@ public class LangMessageField extends LangField<TranslatedMessage> {
 		check_yaml_path(yaml);
 
 		if (!yaml.isString(yaml_path())) {
-			throw new YamlLoadException("Invalid type for yaml path '" + yaml_path() + "', expected string");
+			throw new YamlLoadException.Lang("Invalid type for yaml path '" + yaml_path() + "', expected string", this);
 		}
 	}
 

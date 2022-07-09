@@ -12,7 +12,7 @@
 
 # DO NOT CHANGE! The version of this language file. Used to determine
 # if the file needs to be updated.
-version: 2
+version: 4
 # The corresponding language code used in resource packs. Used for
 # resource pack generation. Typically this is a combination of the
 # language code (ISO 639) and the country code (ISO 3166).
@@ -28,10 +28,18 @@ command_customitem:
   description: "Donne un objet personnalisé à le·a joueur·se."
   help: "§agive §7<§bobjet§7>:§r Donne un objet personnalisé à le·a joueur·se."
 
+command_enchant:
+  level_too_low: "§cerreur:§6 le niveau %1$s§6 est trop bas, un minimum de %2$s§6 est requis"
+  level_too_high: "§cerreur:§6 le niveau d'enchantement %1$s§6 est trop élevé, un maximum de %2$s§6 est autorisé"
+  invalid_enchantment: "§cerreur: %1$s§6 ne peux pas être appliqué sur %2$s"
+  usage: "%1$s §benchantment §7[§bniveau§7]"
+  description: "Enchante l'objet que vous tenez dans votre main."
+  help: "Enchante l'objet que vous tenez dans votre main."
+
 command_vane:
   reload_success: "%1$s§7: §arechargé avec succès"
   reload_fail: "%1$s§7: §céchec du rechargement"
-  resource_pack_generate_success: "§aPack de ressources généré avec succès"
+  resource_pack_generate_success: "§aPack de ressources généré avec succès: %1$s"
   resource_pack_generate_fail: "§cUne erreur est survenue pendant la génération du pack de ressources"
   usage: "%1$s §7<§areload§7|§agenerate_resource_pack§7>"
   description: "Gère les plugins de vane."
@@ -39,6 +47,7 @@ command_vane:
     §agenerate_resource_pack§7:§r génère le pack de ressources de vane."
 
 resource_pack:
+  # FIXME: missing new sentence in declined translation. see lang-en.yml for the new sentence.
   declined: "Vous devez accepter le pack de ressources pour pouvoir jouer sur ce serveur.\n\
     Il est indispensable pour les traductions, ainsi que les textures."
   download_failed: "§cLe téléchargement du pack de ressources semble avoir échoué.§r\n\

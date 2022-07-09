@@ -3,18 +3,25 @@ package org.oddlama.vane.util;
 import static org.oddlama.vane.util.MaterialUtil.is_replaceable_grass;
 import static org.oddlama.vane.util.MaterialUtil.is_tillable;
 
+import io.netty.buffer.Unpooled;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.game.DebugPackets;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
@@ -62,6 +69,48 @@ public class BlockUtil {
 			.setVelocity(Vector.getRandom().add(new Vector(-.5, +.5, -.5)).normalize().multiply(.15));
 	}
 
+	public static void add_debug_block_marker(
+		final World world,
+		final BlockPos pos,
+		final String message,
+		final int color,
+		final int duration
+	) {
+		DebugPackets.sendGameTestAddMarker(Nms.world_handle(world), pos, message, color, duration);
+	}
+
+	public static void add_debug_block_marker(
+		final Player player,
+		final BlockPos pos,
+		final String message,
+		final int color,
+		final int duration
+	) {
+		final var buf = new FriendlyByteBuf(Unpooled.buffer());
+		buf.writeBlockPos(pos);
+		buf.writeInt(color);
+		buf.writeUtf(message);
+		buf.writeInt(duration);
+		Nms
+			.player_handle(player)
+			.connection.send(
+				new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.DEBUG_GAME_TEST_ADD_MARKER, buf)
+			);
+	}
+
+	public static void clear_debug_block_marker(final World world) {
+		DebugPackets.sendGameTestClearPacket(Nms.world_handle(world));
+	}
+
+	public static void clear_debug_block_marker(final Player player) {
+		final var buf = new FriendlyByteBuf(Unpooled.buffer());
+		Nms
+			.player_handle(player)
+			.connection.send(
+				new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.DEBUG_GAME_TEST_CLEAR, buf)
+			);
+	}
+
 	public static List<BlockVector> nearest_blocks_for_radius(int radius) {
 		final var ret = new ArrayList<BlockVector>();
 
@@ -85,13 +134,6 @@ public class BlockUtil {
 		return block.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
 	}
 
-	public static Block unpack(final Chunk chunk, long block_key) {
-		int x = (int) ((block_key << 37) >> 37) & 0x0f;
-		int y = (int) (block_key >>> 54) & 0xff;
-		int z = (int) ((block_key << 10) >> 37) & 0x0f;
-		return chunk.getBlock(x, y, z);
-	}
-
 	public static Block next_tillable_block(final Block root_block, int radius, boolean careless) {
 		for (final var relative_pos : NEAREST_RELATIVE_BLOCKS_FOR_RADIUS.get(radius)) {
 			final var block = relative(root_block, relative_pos);
@@ -111,8 +153,7 @@ public class BlockUtil {
 				// If the block above is air, we can till the block.
 				return block;
 			} else if (careless && is_replaceable_grass(above.getType())) {
-				// If the item has the careless enchantment, and the block above
-				// is replaceable grass, delete it and return the block.
+				// If the block above is replaceable grass, delete it and return the block.
 				above.setType(Material.AIR);
 				return block;
 			}

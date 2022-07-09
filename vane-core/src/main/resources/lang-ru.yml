@@ -12,7 +12,7 @@
 
 # DO NOT CHANGE! The version of this language file. Used to determine
 # if the file needs to be updated.
-version: 2
+version: 4
 # The corresponding language code used in resource packs. Used for
 # resource pack generation. Typically this is a combination of the
 # language code (ISO 639) and the country code (ISO 3166).
@@ -37,6 +37,23 @@ command_customitem:
   description: "Выдаёт игроку определённый кастомный предмет."
   help: "§agive §7<§bitem§7>:§r Выдаёт игроку определённый кастомный предмет."
 
+command_enchant:
+  # This message is sent when an enchantment level is given that is too low for the chosen enchantment.
+  # %1$s: Given level
+  # %2$s: Minimum level
+  level_too_low: "§cОшибка:§6 уровень %1$s§6 слишком низкий, должен быть как минимум %2$s"
+  # This message is sent when an enchantment level is given that is too high for the chosen enchantment.
+  # %1$s: Given level
+  # %2$s: Maximum level
+  level_too_high: "§cОшибка:§6 уровень %1$s§6 слишком высокий, должен быть максимум %2$s"
+  # This message is sent when the selected enchantment cannot be applied to the item in hand.
+  # %1$s: Enchantment
+  # %2$s: Item in hand
+  invalid_enchantment: "§cОшибка: %1$s§6 не может быть применён к %2$s"
+  usage: "%1$s §benchantment §7[§blevel§7]"
+  description: "Зачаровывает предмет в вашей руке."
+  help: "Зачаровывает предмет в вашей руке."
+
 command_vane:
   # This message is sent when a module has been successfully reloaded.
   # %1$s: module
@@ -45,7 +62,7 @@ command_vane:
   # %1$s: module
   reload_fail: "%1$s§7: §cперезагрузка завершилась неудачей"
   # This message is sent when the resource_pack has been successfully generated.
-  resource_pack_generate_success: "§aРесурспак успешно сгенерирован"
+  resource_pack_generate_success: "§aРесурспак успешно сгенерирован: %1$s"
   # This message is sent when the resource_pack could not be generated.
   resource_pack_generate_fail: "§cПроизошла ошибка во время генерации ресурспака"
   usage: "%1$s §7<§areload§7|§agenerate_resource_pack§7>"
@@ -55,6 +72,7 @@ command_vane:
 
 resource_pack:
   # This kick message is used when a mandatory resource pack was declined by a player.
+  # FIXME: missing new sentence in declined translation. see lang-en.yml for the new sentence.
   declined: "Вам нужно принять ресурспак для игры на этом сервере.\n\
     Это нужно для локализации и текстур."
   # This kick message is used when a mandatory resource pack failed to download for  player.
