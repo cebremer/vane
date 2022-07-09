@@ -14,6 +14,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.HashSet;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.Favicon;
@@ -24,6 +26,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
+import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
@@ -39,6 +42,7 @@ public class Waterfall extends Plugin implements Listener {
 	public static String MESSAGE_MULTIPLEX_MOJANG_AUTH_NO_PERMISSION_KICK =
 		"§cYou have no permission to use this auth multiplexer!";
 
+	public static Set<String> starting_servers = new HashSet<>();
 	public Config config = new Config(this);
 	public Maintenance maintenance = new Maintenance(this);
 
@@ -120,6 +124,63 @@ public class Waterfall extends Plugin implements Listener {
 			return null;
 		}
 	}
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void on_server_connect(ServerConnectEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}				
+		//getLogger().info("entered connection clause");
+		final var target = event.getTarget();
+		final String target_name = target.getName();
+
+		if(starting_servers.add(target_name)){ //runs if name not already in starting list
+			//getLogger().info("added to set");
+			if(config.managed_servers.containsKey(target_name) && !is_online(target)){
+				//getLogger().info("not online");
+				final var cms = config.managed_servers.get(target_name);
+				if(!cms.alternate_autostart()){
+					//getLogger().info("not applicable");
+					starting_servers.remove(target_name);
+					return;
+				}
+				if (cms == null || cms.start_cmd() == null) {
+					getLogger().severe("Could not start server '" + target_name + "', no start command was set!");
+					event.getPlayer().sendMessage(TextComponent.fromLegacyText("Server could not be started"));
+					starting_servers.remove(target_name);
+				} else {
+					//getLogger().info("starting now");
+					getProxy()
+						.getScheduler()
+						.runAsync(
+							this,
+							() -> {
+								try {
+									//getLogger().info("in callback");
+									final var p = Runtime.getRuntime().exec(cms.start_cmd());									
+									p.waitFor();
+									getLogger().info("Starting server " + target_name + " by player request");
+									Thread.sleep(10000);
+									while(!is_online(target)){
+										Thread.sleep(1000);
+									}
+									starting_servers.remove(target_name);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						);					
+				}
+			event.getPlayer().sendMessage(TextComponent.fromLegacyText( //notify if server is starting regardless of whether player was first caller
+				"The server you have requested is currently starting. Please wait a few moments before connecting again!"
+			));
+			event.setCancelled(true);
+			}
+		} 
+		
+	}
+
+
+
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void on_pre_login(PreLoginEvent event) {
@@ -153,6 +214,10 @@ public class Waterfall extends Plugin implements Listener {
 			// For use inside callback
 			final var sinfo = server;
 			final var cms = config.managed_servers.get(sinfo.getName());
+			
+			if(cms.alternate_autostart()){
+				return;
+			}
 
 			if (cms == null || cms.start_cmd() == null) {
 				getLogger().severe("Could not start server '" + sinfo.getName() + "', no start command was set!");

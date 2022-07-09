@@ -44,6 +44,7 @@ public class Config {
 			final var conf_managed_servers = conf.getSection("managed_servers");
 			for (final var id : conf_managed_servers.getKeys()) {
 				final var section = conf_managed_servers.getSection(id);
+				final var alternate_autostart = section.getBoolean("alternate_autostart");
 				final var display_name = section.getString("display_name");
 				final var favicon = section.getString("favicon");
 				final var conf_quotes = section.getSection("quotes");
@@ -58,6 +59,7 @@ public class Config {
 
 				final var managed_server = new ManagedServer(id);
 				managed_server.display_name(display_name);
+				managed_server.alternate_autostart(alternate_autostart);
 				managed_server.favicon(favicon);
 				managed_server.quotes_online(quotes_online);
 				managed_server.quotes_offline(quotes_offline);

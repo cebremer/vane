@@ -10,6 +10,7 @@ public class ManagedServer {
 
 	private final String id;
 	private String display_name;
+	private boolean alternate_autostart;
 	private List<String> quotes_online;
 	private List<String> quotes_offline;
 	private String motd_online;
@@ -32,6 +33,14 @@ public class ManagedServer {
 
 	public String display_name() {
 		return display_name;
+	}
+
+	public boolean alternate_autostart(){
+		return alternate_autostart;
+	}
+
+	public void alternate_autostart(boolean alternate_autostart){
+		this.alternate_autostart = alternate_autostart;
 	}
 
 	public String random_quote_online() {
